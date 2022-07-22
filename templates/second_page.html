@@ -19,12 +19,12 @@
         <h1> Second page </h1>
             {{ name }}
             {{ age }}
-
+            {% comment %} {{ leads }} {% endcomment %}
             <ul>
                 {% for lead in leads %}
                 <li>{{ lead }}</li>
-                {% endfor %}
-
+            {% endfor %}
+            </ul>
 
         <script src="" async defer></script>
     </body>
