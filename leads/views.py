@@ -6,9 +6,17 @@ from django.http import HttpResponse
 from django.template import context
 from .models import Lead, Agent
 from .forms import LeadForm, LeadModelForm
-
+from django.views import generic
 from django.views.generic import TemplateView, ListView, DetailView, UpdateView, CreateView, DeleteView
+# from django.contrib.auth.forms import UserCreationForm
+from .forms import CustomUserCreationForm
 
+class SignUpView(generic.CreateView):
+    template_name = "registration/signup.html"
+    form_class = CustomUserCreationForm
+    
+    def get_success_url(self):
+        return reverse("login")
 
 
 class LandingPageView(TemplateView):
