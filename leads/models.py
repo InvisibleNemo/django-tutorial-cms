@@ -8,7 +8,6 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     is_organizer = models.BooleanField(default=True)
     is_agent = models.BooleanField(default=False) 
-    pass
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -27,7 +26,8 @@ class Lead(models.Model):
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20)
     age = models.PositiveIntegerField(default=0)
-    agent = models.ForeignKey("Agent", on_delete=models.CASCADE) # When an agent is deleted the lead will be deleted as well
+    organization =models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    agent = models.ForeignKey("Agent", null=True, blank=True, on_delete=models.SET_NULL) # When an agent is deleted the lead will be deleted as well
 
     # phoned = models.BooleanField(default=False)
     # source = models.CharField(choices=SOURCE_CHOICES, max_length=100)

@@ -26,15 +26,22 @@ class AgentCreateView(OrganizerAndLoginRequiredMixin, generic.CreateView):
         return reverse("agents:agent-list")
     
     def form_valid(self, form):
-        agent = form.save(commit=False)
-        agent.organization = self.request.user.userprofile
-        agent.save()
+        user = form.save(commit=False)
+        user.is_agent = True
+        user.is_organizer = False
+        user.save()
+        Agent.objects.create(
+            user=user,
+            organization=self.request.user.userprofile,
+        )
+        # agent.organization = self.request.user.userprofile
+        # agent.save()
         # TODO send email
         send_mail(
-            subject="Agent created",
-            message="Go to the site to view.",
-            from_email="test@test.com",
-            recipient_list=["test2@test.com"]
+            subject="You are invited to be an agent",
+            message="Go to the site to view.",            
+            from_email="admin@test.com",
+            recipient_list=[user.email]   
         )
         return super(AgentCreateView, self).form_valid(form)
     
