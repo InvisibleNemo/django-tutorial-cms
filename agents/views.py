@@ -1,9 +1,10 @@
+from random import randint, random
 from django.shortcuts import reverse
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.mail import send_mail
 from leads.models import Agent
 from .forms import AgentModelForm
-from django.core.mail import send_mail
 from .mixins import OrganizerAndLoginRequiredMixin
 
 # Create your views here.
@@ -29,6 +30,7 @@ class AgentCreateView(OrganizerAndLoginRequiredMixin, generic.CreateView):
         user = form.save(commit=False)
         user.is_agent = True
         user.is_organizer = False
+        user.set_password(f"{randint(1,100000000)}")
         user.save()
         Agent.objects.create(
             user=user,
