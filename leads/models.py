@@ -1,3 +1,4 @@
+from unicodedata import category
 from django.db import models
 from django.db.models.signals import post_save, pre_save
 from django.contrib.auth.models import AbstractUser
@@ -30,6 +31,8 @@ class Lead(models.Model):
     organization =models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     agent = models.ForeignKey("Agent", null=True, blank=True, on_delete=models.SET_NULL) # When an agent is deleted the lead will be deleted as well
 
+    category = models.ForeignKey("Category", null=True, blank=True, on_delete=models.SET_NULL)
+
     # phoned = models.BooleanField(default=False)
     # source = models.CharField(choices=SOURCE_CHOICES, max_length=100)
 
@@ -45,6 +48,13 @@ class Agent(models.Model):
     
     def __str__(self) -> str:
         return self.user.email   
+
+class Category(models.Model):
+    name = models.CharField(max_length=30, default="New") # New, Contacted, Converted, Unconverted
+
+    def __str__(self) -> str:
+        return self.name
+
 
 
 def post_user_created_signal(sender, instance, created, **kwargs):
