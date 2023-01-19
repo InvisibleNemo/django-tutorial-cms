@@ -169,6 +169,26 @@ class CategoryListView(LoginRequiredMixin, generic.ListView):
             queryset = Category.objects.filter(organization=user.agent.organization)     
         return queryset
 
+class CategoryDetailView(LoginRequiredMixin, generic.DetailView):
+    template_name = "leads/category_detail.html"
+    context_object_name = "category"
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_organizer:
+            queryset = Category.objects.filter(organization=user.userprofile)
+        elif user.is_agent:
+            queryset = Category.objects.filter(organization=user.agent.organization)     
+        return queryset
+
+    # def get_context_data(self, **kwargs):
+
+    #     context =  super(CategoryDetailView, self).get_context_data(**kwargs)
+    #     leads = self.get_object().leads.all()
+    #     context.update({
+    #         "leads": leads
+    #     })
+    #     return context
 
 # Create your views here.
 

@@ -31,7 +31,7 @@ class Lead(models.Model):
     organization =models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     agent = models.ForeignKey("Agent", null=True, blank=True, on_delete=models.SET_NULL) # When an agent is deleted the lead will be deleted as well
 
-    category = models.ForeignKey("Category", null=True, blank=True, on_delete=models.SET_NULL)
+    category = models.ForeignKey("Category", related_name="leads", null=True, blank=True, on_delete=models.SET_NULL)
 
     # phoned = models.BooleanField(default=False)
     # source = models.CharField(choices=SOURCE_CHOICES, max_length=100)
