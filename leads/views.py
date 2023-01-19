@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from django.template import context
 
 import agents
-from .models import Lead, Agent
+from .models import Lead, Agent, Category
 from .forms import LeadForm, LeadModelForm
 from django.views import generic
 from django.views.generic import TemplateView, ListView, DetailView, UpdateView, CreateView, DeleteView
@@ -139,6 +139,37 @@ class AssignAgentView(OrganizerAndLoginRequiredMixin, generic.FormView):
         lead.agent = agent
         lead.save()
         return super(AssignAgentView, self).form_valid(form)
+
+
+class CategoryListView(LoginRequiredMixin, generic.ListView):
+    template_name = "leads/category_list.html"
+    context_object_name = "category_list"
+
+    def get_context_data(self, **kwargs):
+
+        context =  super(CategoryListView, self).get_context_data(**kwargs)
+
+        user = self.request.user
+
+        if user.is_organizer:
+            queryset = Lead.objects.filter(organization=user.userprofile)
+        elif user.is_agent:
+            queryset = Lead.objects.filter(organization=user.agent.organization)
+
+        context.update({
+            "unassigned_lead_count": queryset.filter(category__isnull=True).count()
+        })
+        return context
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_organizer:
+            queryset = Category.objects.filter(organization=user.userprofile)
+        elif user.is_agent:
+            queryset = Category.objects.filter(organization=user.agent.organization)     
+        return queryset
+
+
 # Create your views here.
 
 # def landing_page(request):

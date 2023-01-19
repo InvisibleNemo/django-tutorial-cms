@@ -51,7 +51,7 @@ class Agent(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=30, default="New") # New, Contacted, Converted, Unconverted
-
+    organization = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     def __str__(self) -> str:
         return self.name
 
