@@ -83,6 +83,9 @@ class LeadCreateView(OrganizerAndLoginRequiredMixin, CreateView):
     
     def form_valid(self, form: LeadForm) -> HttpResponse:
         # TODO send email
+        lead = form.save()
+        lead.organization = self.request.user.userprofile
+        lead.save()
         send_mail(
             subject="Lead created",
             message="Go to the site to view.",
