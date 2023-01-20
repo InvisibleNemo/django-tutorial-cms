@@ -12,7 +12,7 @@ from .forms import LeadForm, LeadModelForm
 from django.views import generic
 from django.views.generic import TemplateView, ListView, DetailView, UpdateView, CreateView, DeleteView
 # from django.contrib.auth.forms import UserCreationForm
-from .forms import CustomUserCreationForm, AssignAgentForm
+from .forms import CustomUserCreationForm, AssignAgentForm, LeadCategoryUpdateForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from agents.mixins import OrganizerAndLoginRequiredMixin
 
@@ -103,7 +103,7 @@ class LeadUpdateView(OrganizerAndLoginRequiredMixin, UpdateView):
     
 
     def get_success_url(self):
-        return reverse("leads:lead-list")
+        return reverse("leads:lead-detail", kwargs={"pk": self.get_object().id})
 
 class LeadDeleteView(LoginRequiredMixin, DeleteView):
     template_name = "leads/lead_delete.html"
@@ -180,6 +180,25 @@ class CategoryDetailView(LoginRequiredMixin, generic.DetailView):
         elif user.is_agent:
             queryset = Category.objects.filter(organization=user.agent.organization)     
         return queryset
+
+class LeadCategoryUpdateView(LoginRequiredMixin, generic.UpdateView):
+    template_name = "leads/lead_category_update.html"
+    form_class = LeadCategoryUpdateForm
+
+    
+    
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_organizer:
+            queryset = Lead.objects.filter(organization=user.userprofile) # initial queryset
+        elif user.is_agent:
+            queryset = Lead.objects.filter(organization=user.agent.organization)
+            queryset = queryset.filter(agent__user=user) # filter for the agent logged in        
+        return queryset
+
+    def get_success_url(self):
+        return reverse("leads:lead-detail", kwargs={"pk": self.get_object().id})
+
 
     # def get_context_data(self, **kwargs):
 
